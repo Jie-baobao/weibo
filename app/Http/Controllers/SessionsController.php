@@ -12,6 +12,20 @@ class SessionsController extends Controller
         return view('sessions.create');
     }
 
+    //仅未登录用户访问注册登录页
+    public function __construct()
+    {
+        //仅未登录用户访问注册页
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store']
+        ]);
+
+        //仅未登录用户访问登录页
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
     public function store(Request $request)
     {
        $credentials = $this->validate($request, [
@@ -19,13 +33,16 @@ class SessionsController extends Controller
            'password' => 'required'
        ]);
 
+       //登录成功访问上一请求或用户页
        if (Auth::attempt($credentials, $request->has('remember'))) {
-           session()->flash('success', '欢迎回来！');
-           return redirect()->route('users.show', [Auth::user()]);
-       } else {
-           session()->flash('danger', '很抱歉，您的邮箱或密码不匹配');
-           return redirect()->back()->withInput();
-       }
+        session()->flash('success', '欢迎回来！');
+        $fallback = route('users.show', Auth::user());
+        return redirect()->intended($fallback);
+    } else {
+        //登录失败返回登录页
+        session()->flash('danger', '很抱歉，您的邮箱和密码不匹配');
+        return redirect()->back()->withInput();
+    }
     }
 
     public function destroy()

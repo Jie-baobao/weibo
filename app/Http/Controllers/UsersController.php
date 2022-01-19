@@ -44,12 +44,14 @@ class UsersController extends Controller
     //编辑用户信息
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
     //处理用户更新信息
     public function update(User $user, Request $request)
     {
+        $this->authorize('update', $user);
         $this->validate($request, [
             'name' => 'required|min:3|max:50',
             'password' => 'nullable|confirmed|min:6'
@@ -65,5 +67,13 @@ class UsersController extends Controller
         session()->flash('success', '个人资料更新成功！');
 
         return redirect()->route('users.show', $user);
+    }
+
+    //过滤未登录用户操作
+    public function __construct()
+    {
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store']
+        ]);
     }
 }
