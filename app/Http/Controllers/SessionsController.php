@@ -12,15 +12,9 @@ class SessionsController extends Controller
         return view('sessions.create');
     }
 
-    //仅未登录用户访问注册登录页
+    //仅未登录用户访问登录页面
     public function __construct()
     {
-        //仅未登录用户访问注册页
-        $this->middleware('auth', [
-            'except' => ['show', 'create', 'store']
-        ]);
-
-        //仅未登录用户访问登录页
         $this->middleware('guest', [
             'only' => ['create']
         ]);

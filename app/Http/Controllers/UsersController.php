@@ -75,5 +75,10 @@ class UsersController extends Controller
         $this->middleware('auth', [
             'except' => ['show', 'create', 'store']
         ]);
+
+        //仅未登录用户访问注册页面
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
     }
 }
