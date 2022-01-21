@@ -72,13 +72,22 @@ class UsersController extends Controller
     //过滤未登录用户操作
     public function __construct()
     {
+        //允许访客访问的页面
         $this->middleware('auth', [
-            'except' => ['show', 'create', 'store']
+            'except' => ['show', 'create', 'store', 'index']
         ]);
 
         //仅未登录用户访问注册页面
         $this->middleware('guest', [
             'only' => ['create']
         ]);
+    }
+
+    //用户主页
+    public function index()
+    {
+        //用户分页，每页6个
+        $users = User::paginate(6);
+        return view('users.index', compact('users'));
     }
 }
