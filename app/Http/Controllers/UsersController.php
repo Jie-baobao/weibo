@@ -72,7 +72,7 @@ class UsersController extends Controller
     //过滤未登录用户操作
     public function __construct()
     {
-        //允许访客访问的页面
+        //允许访客访问的页面，访客访问路径白名单
         $this->middleware('auth', [
             'except' => ['show', 'create', 'store', 'index']
         ]);
@@ -89,5 +89,14 @@ class UsersController extends Controller
         //用户分页，每页6个
         $users = User::paginate(6);
         return view('users.index', compact('users'));
+    }
+
+    //删除用户
+    public function destroy(User $user)
+    {
+        $this->authorize('destroy', $user);
+        $user->delete();
+        session()->flash('success', '成功删除用户！');
+        return back();
     }
 }
