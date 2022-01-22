@@ -12,6 +12,20 @@ use Carbon\Carbon;
 
 class PasswordController extends Controller
 {
+    //限流规则，防爆破
+    public function __construct()
+    {
+        //忘记密码链接，1分钟最多访问2次
+        $this->middleware('throttle:2,1', [
+            'only' => ['showLinkRequestForm']
+        ]);
+
+        //忘记密码，10分钟最多发送3次邮件
+        $this->middleware('throttle:3,10', [
+            'only' => ['sendResetLinkEmail']
+        ]);
+    }
+
     public function showLinkRequestForm()
     {
         return view('auth.passwords.email');
