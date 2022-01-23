@@ -18,7 +18,10 @@ class UsersController extends Controller
     //用户个人信息页面
     public function show(User $user)
     {
-        return view('users.show', compact('user'));
+        $statuses = $user->statuses()
+                           ->orderBy('created_at', 'desc')
+                           ->paginate(10);
+        return view('users.show', compact('user', 'statuses'));
     }
 
     //用户注册
